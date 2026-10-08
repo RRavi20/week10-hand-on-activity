@@ -11,13 +11,19 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'docker build -t week10-production-app:1.0 .'
+                sh 'docker build -t week10-production-app:2.0 .'
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL week10-production-app:2.0'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'docker image inspect week10-production-app:1.0'
+                sh 'docker image inspect week10-production-app:2.0'
             }
         }
 
@@ -28,7 +34,7 @@ pipeline {
                     docker run -d \
                       --name week10-production-app \
                       -p 8082:80 \
-                      week10-production-app:1.0
+                      week10-production-app:2.0
                 '''
             }
         }
@@ -40,4 +46,3 @@ pipeline {
         }
     }
 }
-
